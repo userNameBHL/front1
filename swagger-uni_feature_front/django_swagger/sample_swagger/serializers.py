@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import Users
+from .models import Users, Front
 from .models import Tags
 from .models import Influence
 from .models import Contents
+
 
 #데이터 읽기(Read)
 class UsersDataSerializer(ModelSerializer):
@@ -22,7 +23,10 @@ class ContentsDataSerializer(ModelSerializer):
     class Meta:
         model = Contents
         fields = '__all__'
-
+class FrontDataSerializer(ModelSerializer):
+    class Meta:
+        model = Front
+        fields = '__all__'
 
 
 #특정 데이터 읽기(Read)
@@ -76,7 +80,14 @@ class ContentsPostRequestSerializer(serializers.Serializer):
     relatedvideos = serializers.CharField(max_length=255)
     tags = serializers.CharField(max_length=255)
 
-
+class FrontPostRequestSerializer(serializers.Serializer):
+    categories = serializers.CharField(max_length=255)
+    channelMood = serializers.CharField(max_length=255)
+    channelPurpose = serializers.CharField(max_length=255)
+    gender = serializers.CharField(max_length=255)
+    interests = serializers.CharField(max_length=255)
+    mbti = serializers.CharField(max_length=255)
+    videoStyle = serializers.CharField(max_length=255)
 
 
 
@@ -122,7 +133,15 @@ class ContentsPostResponseSerializer(serializers.Serializer):
     subscriber = serializers.CharField()
     relatedvideos = serializers.CharField()
     tags = serializers.CharField()
-
+class FrontPostResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    categories = serializers.CharField()
+    channelMood = serializers.CharField()
+    channelPurpose = serializers.CharField()
+    gender = serializers.CharField()
+    interests = serializers.CharField()
+    mbti = serializers.CharField()
+    videoStyle = serializers.CharField()
 
 
 
@@ -164,7 +183,14 @@ class ContentsPutRequestSerializer(serializers.Serializer):
     subscriber = serializers.CharField(max_length=255)
     relatedvideos = serializers.CharField(max_length=255)
     tags = serializers.CharField(max_length=255)
-
+class FrontPutRequestSerializer(serializers.Serializer):
+    categories = serializers.CharField(max_length=255)
+    channelMood = serializers.CharField(max_length=255)
+    channelPurpose = serializers.CharField(max_length=255)
+    gender = serializers.CharField(max_length=255)
+    interests = serializers.CharField(max_length=255)
+    mbti = serializers.CharField(max_length=255)
+    videoStyle = serializers.CharField(max_length=255)
 
 
 
@@ -210,3 +236,12 @@ class ContentsPutResponseSerializer(serializers.Serializer):
     subscriber = serializers.CharField()
     relatedvideos = serializers.CharField()
     tags = serializers.CharField()
+class FrontPutResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    categories = serializers.CharField()
+    channelMood = serializers.CharField()
+    channelPurpose = serializers.CharField()
+    gender = serializers.CharField()
+    interests = serializers.CharField()
+    mbti = serializers.CharField()
+    videoStyle = serializers.CharField()

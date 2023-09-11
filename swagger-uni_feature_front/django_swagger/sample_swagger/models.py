@@ -164,3 +164,15 @@ class Contents(models.Model):
     class Meta:
         managed=True
         db_table='contents'
+class Front(models.Model):
+    categories = models.CharField(max_length=255)
+    channelMood = models.CharField(max_length=255)
+    channelPurpose = models.CharField(max_length=255)
+    gender = models.CharField(max_length=255)
+    interests = models.CharField(max_length=255)
+    mbti = models.CharField(max_length=255)
+    videoStyle = models.CharField(max_length=255)
+
+    class Meta:
+        managed=True
+        db_table='front'

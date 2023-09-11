@@ -1,10 +1,9 @@
 from django.urls import path
-from sample_swagger.views import  SerializerView
+from sample_swagger.views import SerializerView
 from . import views
 
-
 urlpatterns = [
-         #Users
+        #Users
         path('v1/Users/', SerializerView.UsersInsertData.as_view(), name='users_insert_data'),
         path('v1/Users/data/', SerializerView.as_view(), name='users_data'),
         path('v1/Users/update/<int:id>/', SerializerView.UsersUpdateData.as_view(), name='users_update_data'),
@@ -28,4 +27,11 @@ urlpatterns = [
         path('v1/Contents/', SerializerView.ContentsInsertData.as_view(), name='contents_insert_data'),
         path('v1/Contents/update/<int:id>/', SerializerView.ContentsUpdateData.as_view(), name='contents_update_data'),
         path('v1/Contents/delete/<int:id>/', SerializerView.ContentsDeleteData.as_view(), name='contents_delete_data'),
-    ]
+
+        #User_data
+        path('v1/Front/datas/', views.getFrontDatas, name="front_datas"),
+        path('v1/Front/', SerializerView.FrontInsertData.as_view(), name='front_insert_data'),
+        path('v1/Front/update/<int:id>/', SerializerView.FrontUpdateData.as_view(), name='front_update_data'),
+        path('v1/Front/delete/<int:id>/', SerializerView.FrontDeleteData.as_view(), name='front_delete_data'),
+
+]

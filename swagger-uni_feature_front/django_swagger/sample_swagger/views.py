@@ -1,4 +1,4 @@
-from rest_framework import permissions,status
+from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -7,27 +7,40 @@ from .models import Users
 from .models import Tags
 from .models import Influence
 from .models import Contents
-from .serializers import UsersDataSerializer, GetRequestSerializer,  UsersPostRequestSerializer, UsersPostResponseSerializer,  UsersPutResponseSerializer, UsersPutRequestSerializer
-from .serializers import TagsDataSerializer, TagsPostRequestSerializer, TagsPostResponseSerializer, TagsPutRequestSerializer, TagsPutResponseSerializer
-from .serializers import InfluenceDataSerializer, InfluencePostRequestSerializer, InfluencePostResponseSerializer, InfluencePutRequestSerializer, InfluencePutResponseSerializer
-from .serializers import ContentsDataSerializer, ContentsPostRequestSerializer, ContentsPostResponseSerializer, ContentsPutResponseSerializer, ContentsPutRequestSerializer
+from .models import Front
+from .serializers import UsersDataSerializer, GetRequestSerializer, UsersPostRequestSerializer, \
+    UsersPostResponseSerializer, UsersPutResponseSerializer, UsersPutRequestSerializer, FrontDataSerializer, \
+    FrontPostRequestSerializer, FrontPostResponseSerializer, FrontPutResponseSerializer, FrontPutRequestSerializer
+from .serializers import TagsDataSerializer, TagsPostRequestSerializer, TagsPostResponseSerializer, \
+    TagsPutRequestSerializer, TagsPutResponseSerializer
+from .serializers import InfluenceDataSerializer, InfluencePostRequestSerializer, InfluencePostResponseSerializer, \
+    InfluencePutRequestSerializer, InfluencePutResponseSerializer
+from .serializers import ContentsDataSerializer, ContentsPostRequestSerializer, ContentsPostResponseSerializer, \
+    ContentsPutResponseSerializer, ContentsPutRequestSerializer
 
-#@api_view(['GET']) 데이터 읽기(Read)
+
+# @api_view(['GET']) 데이터 읽기(Read)
 @api_view(['GET'])
 def getUsersDatas(request):
     datas = Users.objects.all()
     serializer = UsersDataSerializer(datas, many=True)
     return Response(serializer.data)
+
+
 @api_view(['GET'])
 def getTagsDatas(request):
     datas = Tags.objects.all()
     serializer = TagsDataSerializer(datas, many=True)
     return Response(serializer.data)
+
+
 @api_view(['GET'])
 def getInfluenceDatas(request):
     datas = Influence.objects.all()
     serializer = InfluenceDataSerializer(datas, many=True)
     return Response(serializer.data)
+
+
 @api_view(['GET'])
 def getContentsDatas(request):
     datas = Contents.objects.all()
@@ -35,25 +48,26 @@ def getContentsDatas(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def getFrontDatas(request):
+    datas = Front.objects.all()
+    serializer = FrontDataSerializer(datas, many=True)
+    return Response(serializer.data)
+
 
 class SerializerView(APIView):
     permission_classes = [permissions.AllowAny]
-    
-    
-    
-    #특정 데이터 읽기(Read)-현재 Users 테이블만 적용했음
+
+    # 특정 데이터 읽기(Read)-현재 Users 테이블만 적용했음
     @swagger_auto_schema(query_serializer=GetRequestSerializer, responses={"200": UsersDataSerializer(many=True)})
     def get(self, request):
-            param = request.query_params.get('username', None)  # 요청에서 'param' 값을 가져옵니다.
-            if param is not None:
-                datas = Users.objects.filter(username=param)
-            else:
-                datas = Users.objects.all()
-            serializer = UsersDataSerializer(datas, many=True)
-            return Response(serializer.data)
-
-
-
+        param = request.query_params.get('username', None)  # 요청에서 'param' 값을 가져옵니다.
+        if param is not None:
+            datas = Users.objects.filter(username=param)
+        else:
+            datas = Users.objects.all()
+        serializer = UsersDataSerializer(datas, many=True)
+        return Response(serializer.data)
 
     # PostRequestSerializer 데이터 생성(Create)
     class UsersInsertData(APIView):
@@ -73,6 +87,7 @@ class SerializerView(APIView):
                 return Response({'message': 'Data created successfully.'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     class TagsInsertData(APIView):
         @swagger_auto_schema(request_body=TagsPostRequestSerializer, responses={"201": TagsPostResponseSerializer})
         def post(self, request):
@@ -85,8 +100,10 @@ class SerializerView(APIView):
                 return Response({'message': 'Data created successfully.'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     class InfluenceInsertData(APIView):
-        @swagger_auto_schema(request_body=InfluencePostRequestSerializer, responses={"201": InfluencePostResponseSerializer})
+        @swagger_auto_schema(request_body=InfluencePostRequestSerializer,
+                             responses={"201": InfluencePostResponseSerializer})
         def post(self, request):
             serializer = InfluencePostRequestSerializer(data=request.data)
             if serializer.is_valid():
@@ -103,8 +120,10 @@ class SerializerView(APIView):
                 return Response({'message': 'Data created successfully.'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     class ContentsInsertData(APIView):
-        @swagger_auto_schema(request_body=ContentsPostRequestSerializer, responses={"201": ContentsPostResponseSerializer})
+        @swagger_auto_schema(request_body=ContentsPostRequestSerializer,
+                             responses={"201": ContentsPostResponseSerializer})
         def post(self, request):
             serializer = ContentsPostRequestSerializer(data=request.data)
             if serializer.is_valid():
@@ -130,7 +149,23 @@ class SerializerView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+    class FrontInsertData(APIView):
+        @swagger_auto_schema(request_body=FrontPostRequestSerializer, responses={"201": FrontPostResponseSerializer})
+        def post(self, request):
+            serializer = FrontPostRequestSerializer(data=request.data)
+            if serializer.is_valid():
+                Front.objects.create(
+                    categories=serializer.validated_data['categories'],
+                    channelMood=serializer.validated_data['channelMood'],
+                    channelPurpose=serializer.validated_data['channelPurpose'],
+                    gender=serializer.validated_data['gender'],
+                    interests=serializer.validated_data['interests'],
+                    mbti=serializer.validated_data['mbti'],
+                    videoStyle=serializer.validated_data['videoStyle'],
+                )
+                return Response({'message': 'Data created successfully.'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PutRequestSerializer 데이터 수정(Update)
     class UsersUpdateData(APIView):
@@ -160,6 +195,7 @@ class SerializerView(APIView):
                 return Response(serializer.data)
             except Users.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
     class TagsUpdateData(APIView):
         @swagger_auto_schema(request_body=TagsPutRequestSerializer, responses={"200": TagsPutResponseSerializer})
         def put(self, request, id):
@@ -177,8 +213,10 @@ class SerializerView(APIView):
                 return Response(serializer.data)
             except Tags.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
     class InfluenceUpdateData(APIView):
-        @swagger_auto_schema(request_body=InfluencePutRequestSerializer, responses={"200": InfluencePutResponseSerializer})
+        @swagger_auto_schema(request_body=InfluencePutRequestSerializer,
+                             responses={"200": InfluencePutResponseSerializer})
         def put(self, request, id):
             try:
                 # 'id'를 기반으로 특정 데이터 조회
@@ -204,10 +242,12 @@ class SerializerView(APIView):
                 data.save()
                 serializer = InfluencePutResponseSerializer(data, many=False)
                 return Response(serializer.data)
-            except Users.DoesNotExist:
+            except Influence.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
     class ContentsUpdateData(APIView):
-        @swagger_auto_schema(request_body=ContentsPutRequestSerializer, responses={"200": ContentsPutResponseSerializer})
+        @swagger_auto_schema(request_body=ContentsPutRequestSerializer,
+                             responses={"200": ContentsPutResponseSerializer})
         def put(self, request, id):
             try:
                 # 'id'를 기반으로 특정 데이터 조회
@@ -252,9 +292,36 @@ class SerializerView(APIView):
             except Contents.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
+    class FrontUpdateData(APIView):
+        @swagger_auto_schema(request_body=FrontPutRequestSerializer, responses={"200": FrontPutResponseSerializer})
+        def put(self, request, id):
+            try:
+                # 'id'를 기반으로 특정 데이터 조회
+                data = Front.objects.get(id=id)
+                # PUT 요청에서 새로운 데이터 값을 가져옴
+                new_data = request.data
+                if 'categories' in new_data:
+                    data.categories = new_data['categories']
+                if 'channelMood' in new_data:
+                    data.channelMood = new_data['channelMood']
+                if 'channelPurpose' in new_data:
+                    data.channelPurpose = new_data['channelPurpose']
+                if 'gender' in new_data:
+                    data.gender = new_data['gender']
+                if 'interests' in new_data:
+                    data.interests = new_data['interests']
+                if 'mbti' in new_data:
+                    data.mbti = new_data['mbti']
+                if 'videoStyle' in new_data:
+                    data.videoStyle = new_data['videoStyle']
 
+                data.save()
+                serializer = FrontPutResponseSerializer(data, many=False)
+                return Response(serializer.data)
+            except Front.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
 
-    #데이터 삭제(Delete)
+    # 데이터 삭제(Delete)
     class UsersDeleteData(APIView):
         @swagger_auto_schema(responses={"204": "No Content", "404": "Not Found"})
         def delete(self, request, id):
@@ -265,6 +332,7 @@ class SerializerView(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except Users.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
     class TagsDeleteData(APIView):
         @swagger_auto_schema(responses={"204": "No Content", "404": "Not Found"})
         def delete(self, request, id):
@@ -275,6 +343,7 @@ class SerializerView(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except Users.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
     class InfluenceDeleteData(APIView):
         @swagger_auto_schema(responses={"204": "No Content", "404": "Not Found"})
         def delete(self, request, id):
@@ -285,6 +354,7 @@ class SerializerView(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except Influence.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
     class ContentsDeleteData(APIView):
         @swagger_auto_schema(responses={"204": "No Content", "404": "Not Found"})
         def delete(self, request, id):
@@ -294,4 +364,15 @@ class SerializerView(APIView):
                 data.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except Contents.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+    class FrontDeleteData(APIView):
+        @swagger_auto_schema(responses={"204": "No Content", "404": "Not Found"})
+        def delete(self, request, id):
+            try:
+                # 'id'를 기반으로 특정 데이터 조회
+                data = Front.objects.get(id=id)
+                data.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except Front.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
