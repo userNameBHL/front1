@@ -5,7 +5,7 @@ from rest_framework import routers
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
+from django.views.generic import TemplateView
 router = routers.DefaultRouter()
 
 schema_view = get_schema_view(
@@ -26,6 +26,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('sample_swagger.urls', 'api'))),
+    path('persona/', TemplateView.as_view(template_name='persona.html'), name='persona'),
 ]
 
 if settings.DEBUG:
