@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('sample_swagger.urls', 'api'))),
     path('persona/', TemplateView.as_view(template_name='persona.html'), name='persona'),
+
 ]
 
 if settings.DEBUG:

@@ -1018,6 +1018,26 @@ document.querySelector('.ApplyButton_apply').addEventListener('click', function(
     setTimeout(() => {
         alert("데이터가 성공적으로 전송되었습니다!");
     }, 1000);
+
+     // 2. 데이터를 서버로 전송하여 Django 모델로 저장
+    fetch('/save_data/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (response.status === 200) {
+            alert('데이터가 성공적으로 저장되었습니다.');
+        } else {
+            alert('데이터 저장 중 오류가 발생했습니다.');
+        }
+    })
+    .catch(error => {
+        console.error('데이터 저장 중 오류:', error);
+    });
+
 });
 
 

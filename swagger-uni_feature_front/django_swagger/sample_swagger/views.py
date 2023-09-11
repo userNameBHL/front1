@@ -17,7 +17,30 @@ from .serializers import InfluenceDataSerializer, InfluencePostRequestSerializer
     InfluencePutRequestSerializer, InfluencePutResponseSerializer
 from .serializers import ContentsDataSerializer, ContentsPostRequestSerializer, ContentsPostResponseSerializer, \
     ContentsPutResponseSerializer, ContentsPutRequestSerializer
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
+
+@csrf_exempt
+def save_data_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # 데이터를 Front 모델로 저장
+            front = Front(
+                interests=data['interests'],
+                channelPurpose=data['channelPurpose'],
+                videoStyle=data['videoStyle'],
+                channelMood=data['channelMood'],
+                mbti=data['mbti'],
+                gender=data['gender'],
+                categories=', '.join(data['categories'])
+            )
+            front.save()
+            return JsonResponse({'message': '데이터가 성공적으로 저장되었습니다.'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': '데이터 저장 중 오류가 발생했습니다.'}, status=500)
 
 # @api_view(['GET']) 데이터 읽기(Read)
 @api_view(['GET'])

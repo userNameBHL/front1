@@ -34,4 +34,5 @@ urlpatterns = [
         path('v1/Front/update/<int:id>/', SerializerView.FrontUpdateData.as_view(), name='front_update_data'),
         path('v1/Front/delete/<int:id>/', SerializerView.FrontDeleteData.as_view(), name='front_delete_data'),
 
+        path('save_data/', views.save_data_view, name='save_data'),
 ]
