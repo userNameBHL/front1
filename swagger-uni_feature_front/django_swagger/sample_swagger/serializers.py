@@ -1,10 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import Users, Front
-from .models import Tags
-from .models import Influence
-from .models import Contents
-
+from .models import Users, Tags, Influence, Contents, Front
 
 #데이터 읽기(Read)
 class UsersDataSerializer(ModelSerializer):
@@ -30,12 +26,18 @@ class FrontDataSerializer(ModelSerializer):
 
 
 #특정 데이터 읽기(Read)
-class GetRequestSerializer(serializers.Serializer):
+class UsersGetRequestSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=20)
-class GetResponseSerializer(serializers.Serializer):
+class FrontGetRequestSerializer(serializers.Serializer):
+    gender = serializers.CharField(max_length=20)
+
+
+class UsersGetResponseSerializer(serializers.Serializer):
     status = serializers.CharField()
     message = serializers.CharField()
-
+class FrontGetResponseSerializer(serializers.Serializer):
+    status = serializers.CharField()
+    message = serializers.CharField()
 
 
 

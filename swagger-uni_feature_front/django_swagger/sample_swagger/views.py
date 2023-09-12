@@ -3,12 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
-from .models import Users
-from .models import Tags
-from .models import Influence
-from .models import Contents
-from .models import Front
-from .serializers import UsersDataSerializer, GetRequestSerializer, UsersPostRequestSerializer, \
+from .models import Users, Tags, Influence, Contents, Front
+from .serializers import UsersDataSerializer, UsersGetRequestSerializer, FrontGetRequestSerializer, UsersPostRequestSerializer, \
     UsersPostResponseSerializer, UsersPutResponseSerializer, UsersPutRequestSerializer, FrontDataSerializer, \
     FrontPostRequestSerializer, FrontPostResponseSerializer, FrontPutResponseSerializer, FrontPutRequestSerializer
 from .serializers import TagsDataSerializer, TagsPostRequestSerializer, TagsPostResponseSerializer, \
@@ -22,25 +18,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 
-@csrf_exempt
-def save_data_view(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            # 데이터를 Front 모델로 저장
-            front = Front(
-                interests=data['interests'],
-                channelPurpose=data['channelPurpose'],
-                videoStyle=data['videoStyle'],
-                channelMood=data['channelMood'],
-                mbti=data['mbti'],
-                gender=data['gender'],
-                categories_json=data['categories_json']  # categories_json 필드에 직접 배열을 할당
-            )
-            front.save()
-            return JsonResponse({'message': '데이터가 성공적으로 저장되었습니다.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'error': '데이터 저장 중 오류가 발생했습니다.'}, status=500)
 
 # @api_view(['GET']) 데이터 읽기(Read)
 @api_view(['GET'])
@@ -82,15 +59,27 @@ class SerializerView(APIView):
     permission_classes = [permissions.AllowAny]
 
     # 특정 데이터 읽기(Read)-현재 Users 테이블만 적용했음
-    @swagger_auto_schema(query_serializer=GetRequestSerializer, responses={"200": UsersDataSerializer(many=True)})
-    def get(self, request):
-        param = request.query_params.get('username', None)  # 요청에서 'param' 값을 가져옵니다.
-        if param is not None:
-            datas = Users.objects.filter(username=param)
-        else:
-            datas = Users.objects.all()
-        serializer = UsersDataSerializer(datas, many=True)
-        return Response(serializer.data)
+    class UsersFindData(APIView):
+        @swagger_auto_schema(query_serializer=UsersGetRequestSerializer, responses={"200": UsersDataSerializer(many=True)})
+        def get(self, request):
+            param = request.query_params.get('username', None)  # 요청에서 'param' 값을 가져옵니다.
+            if param is not None:
+                datas = Users.objects.filter(username=param)
+            else:
+                datas = Users.objects.all()
+            serializer = UsersDataSerializer(datas, many=True)
+            return Response(serializer.data)
+
+    class FrontFindData(APIView):
+        @swagger_auto_schema(query_serializer=FrontGetRequestSerializer, responses={"200": FrontDataSerializer(many=True)})
+        def get(self, request):
+            param = request.query_params.get('gender', None)  # 요청에서 'param' 값을 가져옵니다.
+            if param is not None:
+                datas = Front.objects.filter(gender=param)
+            else:
+                datas = Front.objects.all()
+            serializer = FrontDataSerializer(datas, many=True)
+            return Response(serializer.data)
 
     # PostRequestSerializer 데이터 생성(Create)
     class UsersInsertData(APIView):
@@ -399,3 +388,24 @@ class SerializerView(APIView):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except Front.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
+
+#Front 클라이언트 save_data
+@csrf_exempt
+def save_data_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # 데이터를 Front 모델로 저장
+            front = Front(
+                interests=data['interests'],
+                channelPurpose=data['channelPurpose'],
+                videoStyle=data['videoStyle'],
+                channelMood=data['channelMood'],
+                mbti=data['mbti'],
+                gender=data['gender'],
+                categories_json=data['categories_json']  # categories_json 필드에 직접 배열을 할당
+            )
+            front.save()
+            return JsonResponse({'message': '데이터가 성공적으로 저장되었습니다.'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': '데이터 저장 중 오류가 발생했습니다.'}, status=500)
