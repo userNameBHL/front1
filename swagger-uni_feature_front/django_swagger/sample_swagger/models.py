@@ -165,7 +165,7 @@ class Contents(models.Model):
         managed=True
         db_table='contents'
 class Front(models.Model):
-    categories = models.CharField(max_length=255)
+    categories_json = models.JSONField(default=dict)  # You can change the default value to match your needs
     channelMood = models.CharField(max_length=255)
     channelPurpose = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)

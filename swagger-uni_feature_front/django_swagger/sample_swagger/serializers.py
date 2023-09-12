@@ -81,7 +81,7 @@ class ContentsPostRequestSerializer(serializers.Serializer):
     tags = serializers.CharField(max_length=255)
 
 class FrontPostRequestSerializer(serializers.Serializer):
-    categories = serializers.CharField(max_length=255)
+    categories_json = serializers.JSONField()
     channelMood = serializers.CharField(max_length=255)
     channelPurpose = serializers.CharField(max_length=255)
     gender = serializers.CharField(max_length=255)
@@ -135,7 +135,7 @@ class ContentsPostResponseSerializer(serializers.Serializer):
     tags = serializers.CharField()
 class FrontPostResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    categories = serializers.CharField()
+    categories_json = serializers.JSONField()
     channelMood = serializers.CharField()
     channelPurpose = serializers.CharField()
     gender = serializers.CharField()
@@ -184,7 +184,7 @@ class ContentsPutRequestSerializer(serializers.Serializer):
     relatedvideos = serializers.CharField(max_length=255)
     tags = serializers.CharField(max_length=255)
 class FrontPutRequestSerializer(serializers.Serializer):
-    categories = serializers.CharField(max_length=255)
+    categories_json = serializers.JSONField()
     channelMood = serializers.CharField(max_length=255)
     channelPurpose = serializers.CharField(max_length=255)
     gender = serializers.CharField(max_length=255)
@@ -238,7 +238,7 @@ class ContentsPutResponseSerializer(serializers.Serializer):
     tags = serializers.CharField()
 class FrontPutResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    categories = serializers.CharField()
+    categories_json = serializers.JSONField()  # 수정된 필드 이름
     channelMood = serializers.CharField()
     channelPurpose = serializers.CharField()
     gender = serializers.CharField()

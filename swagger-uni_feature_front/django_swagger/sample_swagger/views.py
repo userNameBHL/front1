@@ -35,7 +35,7 @@ def save_data_view(request):
                 channelMood=data['channelMood'],
                 mbti=data['mbti'],
                 gender=data['gender'],
-                categories=', '.join(data['categories'])
+                categories_json=data['categories_json']  # categories_json 필드에 직접 배열을 할당
             )
             front.save()
             return JsonResponse({'message': '데이터가 성공적으로 저장되었습니다.'}, status=200)
@@ -178,7 +178,7 @@ class SerializerView(APIView):
             serializer = FrontPostRequestSerializer(data=request.data)
             if serializer.is_valid():
                 Front.objects.create(
-                    categories=serializer.validated_data['categories'],
+                    categories_json=serializer.validated_data['categories_json'],
                     channelMood=serializer.validated_data['channelMood'],
                     channelPurpose=serializer.validated_data['channelPurpose'],
                     gender=serializer.validated_data['gender'],
@@ -323,8 +323,8 @@ class SerializerView(APIView):
                 data = Front.objects.get(id=id)
                 # PUT 요청에서 새로운 데이터 값을 가져옴
                 new_data = request.data
-                if 'categories' in new_data:
-                    data.categories = new_data['categories']
+                if 'categories_json' in new_data:
+                    data.categories_json = new_data['categories_json']
                 if 'channelMood' in new_data:
                     data.channelMood = new_data['channelMood']
                 if 'channelPurpose' in new_data:
