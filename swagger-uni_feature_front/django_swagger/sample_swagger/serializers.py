@@ -28,11 +28,16 @@ class FrontDataSerializer(ModelSerializer):
 #특정 데이터 읽기(Read)
 class UsersGetRequestSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=20)
+class ContentsGetRequestSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=20)
 class FrontGetRequestSerializer(serializers.Serializer):
     gender = serializers.CharField(max_length=20)
 
 
 class UsersGetResponseSerializer(serializers.Serializer):
+    status = serializers.CharField()
+    message = serializers.CharField()
+class ContentsGetResponseSerializer(serializers.Serializer):
     status = serializers.CharField()
     message = serializers.CharField()
 class FrontGetResponseSerializer(serializers.Serializer):

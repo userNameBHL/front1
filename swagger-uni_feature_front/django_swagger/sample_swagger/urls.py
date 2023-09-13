@@ -24,6 +24,7 @@ urlpatterns = [
 
         #Contents
         path('v1/Contents/datas/', views.getContentsDatas, name="contents_datas"),
+        path('v1/Contents/data/', SerializerView.ContentsFindData.as_view(), name='contents_data'),
         path('v1/Contents/', SerializerView.ContentsInsertData.as_view(), name='contents_insert_data'),
         path('v1/Contents/update/<int:id>/', SerializerView.ContentsUpdateData.as_view(), name='contents_update_data'),
         path('v1/Contents/delete/<int:id>/', SerializerView.ContentsDeleteData.as_view(), name='contents_delete_data'),
@@ -35,4 +36,6 @@ urlpatterns = [
         path('v1/Front/delete/<int:id>/', SerializerView.FrontDeleteData.as_view(), name='front_delete_data'),
         path('v1/Front/data/', SerializerView.FrontFindData.as_view(), name='front_data'),
         path('save_data/', views.save_data_view, name='save_data'),
+        path('gpt/', views.gpt, name='gpt'),  # /gpt/ URL 패턴을 gpt 뷰와 연결
+
 ]

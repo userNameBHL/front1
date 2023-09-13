@@ -1017,10 +1017,6 @@ document.querySelector('.ApplyButton_apply').addEventListener('click', function(
     // 콘솔에 formData 출력
     console.log(formData);
 
-<!--    // 2. 임시 응답-->
-<!--    setTimeout(() => {-->
-<!--        alert("데이터가 성공적으로 전송되었습니다!");-->
-<!--    }, 1000);-->
 
      // 2. 데이터를 서버로 전송하여 Django 모델로 저장
     fetch('/save_data/', {

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from .models import Users, Tags, Influence, Contents, Front
-from .serializers import UsersDataSerializer, UsersGetRequestSerializer, FrontGetRequestSerializer, UsersPostRequestSerializer, \
+from .serializers import UsersDataSerializer, UsersGetRequestSerializer, ContentsGetRequestSerializer, FrontGetRequestSerializer, UsersPostRequestSerializer, \
     UsersPostResponseSerializer, UsersPutResponseSerializer, UsersPutRequestSerializer, FrontDataSerializer, \
     FrontPostRequestSerializer, FrontPostResponseSerializer, FrontPutResponseSerializer, FrontPutRequestSerializer
 from .serializers import TagsDataSerializer, TagsPostRequestSerializer, TagsPostResponseSerializer, \
@@ -16,8 +16,9 @@ from .serializers import ContentsDataSerializer, ContentsPostRequestSerializer, 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-
-
+from django.shortcuts import render
+from django.http import HttpResponse
+import openai
 
 # @api_view(['GET']) 데이터 읽기(Read)
 @api_view(['GET'])
@@ -69,7 +70,16 @@ class SerializerView(APIView):
                 datas = Users.objects.all()
             serializer = UsersDataSerializer(datas, many=True)
             return Response(serializer.data)
-
+    class ContentsFindData(APIView):
+        @swagger_auto_schema(query_serializer=ContentsGetRequestSerializer, responses={"200": ContentsDataSerializer(many=True)})
+        def get(self, request):
+            param = request.query_params.get('name', None)  # 요청에서 'param' 값을 가져옵니다.
+            if param is not None:
+                datas = Contents.objects.filter(name=param)
+            else:
+                datas = Contents.objects.all()
+            serializer = ContentsDataSerializer(datas, many=True)
+            return Response(serializer.data)
     class FrontFindData(APIView):
         @swagger_auto_schema(query_serializer=FrontGetRequestSerializer, responses={"200": FrontDataSerializer(many=True)})
         def get(self, request):
@@ -409,3 +419,56 @@ def save_data_view(request):
             return JsonResponse({'message': '데이터가 성공적으로 저장되었습니다.'}, status=200)
         except Exception as e:
             return JsonResponse({'error': '데이터 저장 중 오류가 발생했습니다.'}, status=500)
+
+
+def gpt(request):
+    global messages
+    messages = []  # messages 변수를 빈 리스트로 초기화
+    openai.api_key = "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"
+    categories_json = request.GET.get("categories_json", "먹방")
+    channelMood = request.GET.get("channelMood", "재미있는")
+    channelPurpose = request.GET.get("channelPurpose", "구독자 10만명 모으기")
+    gender = request.GET.get("gender", "남")
+    interests = request.GET.get("interests", "맛있는거 먹기")
+    mbti = request.GET.get("mbti", "ENFJ")
+    videoStyle = request.GET.get("videoStyle", "인터뷰")
+
+    prompt = f"""
+    당신은 유튜버 분석가입니다. 
+    카테고리는 {categories_json}, 유튜브 채널의 무드는 {channelMood}, 유튜브 채널 운영 목적는 {channelPurpose},
+    성별은 {gender}, 나의 관심사는 {interests}, mbti는 {mbti},
+    그리고 동영상 유형, 스타일은 {videoStyle}의 조건에 모두 만족하고
+    추천받은 느낌에 맞도록 채널 닉네임, 채널 카테고리, 채널 소개, 채널 경쟁력, 주 시청자, 주 콘텐츠를 추천해주세요.
+    """
+    messages.append({"role": "user", "content": prompt})
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo", messages=messages)
+
+    res = completion.choices[0].message['content'].replace("\n", "<br/>").replace(" ", " &nbsp;")
+    messages.append({"role": 'assistant', "content": res})
+    print(res)
+
+    html = f"""
+    <html>
+    <head><title>추천 받은 항목</title></head>
+    <body id="wrapper">
+        <h1>인플트랜드 추천 사이트</h1>
+        <hr>
+        <div> 추천 받은 항목</div>
+        <div>카테고리: {categories_json}, 유튜브 채널의 무드: {channelMood},  유튜브 채널 운영 목적: {channelPurpose}, 
+        성별: {gender}, 나의 관심사: {interests}, mbti: {mbti}, 동영상 유형, 스타일은 {videoStyle} 의 조건으로 설정했습니다.</div>
+        <br>
+        <form action=/playlist>
+        {res}
+        <hr>
+        <div> 추천 받은 인플트랜드리스트를 저장하고 싶으면 이름을 설정하고, "저장하기"를 눌러주세요.<div>
+        <div> 
+            인플트랜드리스트 이름 설정
+            <input id="playlist" type="text" name="playlist">
+         </div>
+         <input type=submit value=저장하기>
+        </form>
+    </body>
+    </html>   
+    """
+    return HttpResponse(html)
